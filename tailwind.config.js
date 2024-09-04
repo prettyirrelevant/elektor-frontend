@@ -20,8 +20,18 @@ export default {
         foreground: "hsl(var(--foreground))",
 
         customGray: "rgba(175, 175, 175, 0.12)",
+
+        customGray2: "rgba(38, 38, 38, 1)",
+        customeGray3: "rgba(31, 31, 32, 1)",
         customTextGray: "rgba(77, 77, 77, 1)",
         customTextGray2: "rgba(104, 103, 103, 1)",
+        customTextGray3: "rgba(156, 156, 156, 1)",
+        customTextGray4: "rgba(180, 180, 180, 0.73)",
+        customBorder: "rgba(57, 57, 57, 1)",
+
+        customTextGray: "rgba(77, 77, 77, 1)",
+        customTextGray2: "rgba(104, 103, 103, 1)",
+
 
         card: {
           DEFAULT: "hsl(var(--card))",
