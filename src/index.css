@@ -73,4 +73,10 @@
     -webkit-background-clip: text;
     letter-spacing: 16px;
   }
+
+}
+
+* {
+  font-family: "Josefin Sans", sans-serif;
+
 }
