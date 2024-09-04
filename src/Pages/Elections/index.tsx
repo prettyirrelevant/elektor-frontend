@@ -308,7 +308,7 @@ const Election: React.FC = () => {
     const election = elections.find((e) => e.id === electionId);
     if (!election) return;
 
-    const shareText = `I just voted in the "${election.name}"! #CryptoVote`;
+    const shareText = `I just voted in the "${election.name}"! #Elektor`;
     const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
     window.open(shareUrl, "_blank");
   };
@@ -331,7 +331,7 @@ const Election: React.FC = () => {
     <div className="flex min-h-screen bg-gray-100">
       <Toaster />
       <aside className="hidden md:flex flex-col w-64 bg-white p-4">
-        <h1 className="text-2xl font-bold mb-6">CryptoVote</h1>
+        <h1 className="text-2xl font-bold mb-6">Elektor</h1>
         <nav className="space-y-2">
           <Button
             variant="ghost"
@@ -422,7 +422,7 @@ const Election: React.FC = () => {
       <main className="flex-1 p-4 overflow-y-auto">
         <div className="container mx-auto">
           <div className="md:hidden flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold">CryptoVote</h1>
+            <h1 className="text-2xl font-bold">Elektor</h1>
           </div>
           <h2 className="text-3xl font-bold mb-6">
             {activeView === "allElections" && "Upcoming Elections"}
