@@ -1,7 +1,7 @@
-import Body from "./Body";
-import Header from "./Header";
-import MarqueeSection from "./MarqueeSection";
-import Watermark from "./Watermark";
+import Body from './Body';
+import Header from './Header';
+import MarqueeSection from './MarqueeSection';
+import Watermark from './Watermark';
 
 const Home = () => {
   return (

@@ -1,4 +1,4 @@
-import Typewriter from "typewriter-effect";
+import Typewriter from 'typewriter-effect';
 
 const Body = () => {
   return (
@@ -11,7 +11,7 @@ const Body = () => {
           <span>-</span>
           <Typewriter
             options={{
-              strings: ["TAMPER-PROOF", "RELIABLE", "TRANSPARENT", "PRIVATE", "VERIFIABLE"],
+              strings: ['TAMPER-PROOF', 'RELIABLE', 'TRANSPARENT', 'PRIVATE', 'VERIFIABLE'],
               autoStart: true,
               loop: true,
             }}

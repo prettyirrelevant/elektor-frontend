@@ -1,7 +1,6 @@
-
-import { Route, Routes } from "react-router-dom";
-import Election from "./Pages/Elections";
-import Home from "./Pages/Home";
+import { Route, Routes } from 'react-router-dom';
+import Election from './Pages/Elections';
+import Home from './Pages/Home';
 
 const App: React.FC = () => {
   return (

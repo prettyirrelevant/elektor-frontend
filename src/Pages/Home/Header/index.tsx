@@ -1,5 +1,5 @@
-import logo from "../../../assets/logo/cryptoVote-logo.svg";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
+import logo from '../../../assets/logo/cryptoVote-logo.svg';
 
 const Header = () => {
   const navigate = useNavigate();
@@ -12,7 +12,7 @@ const Header = () => {
           <span>Elektor</span>
         </div>
         <div>
-          <button onClick={() => navigate('/elections')} className="bg-customGray w-32 h-11 rounded-lg">
+          <button type="button" onClick={() => navigate('/elections')} className="bg-customGray w-32 h-11 rounded-lg">
             Launch app
           </button>
         </div>

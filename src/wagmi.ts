@@ -1,16 +1,15 @@
 import { http, createConfig } from 'wagmi';
-import { injected, coinbaseWallet, walletConnect } from 'wagmi/connectors';
-import { polygonAmoy, polygon } from 'wagmi/chains';
+import { polygonAmoy } from 'wagmi/chains';
+import { injected } from 'wagmi/connectors';
 
 export const config = createConfig({
-  chains: [polygon, polygonAmoy],
+  chains: [polygonAmoy],
   connectors: [
     injected(),
-    coinbaseWallet(),
-    walletConnect({ projectId: import.meta.env.VITE_WC_PROJECT_ID }),
+    // coinbaseWallet(),
+    // walletConnect({ projectId: import.meta.env.VITE_WC_PROJECT_ID }),
   ],
   transports: {
-    [polygon.id]: http(),
     [polygonAmoy.id]: http(),
   },
 });
