@@ -379,7 +379,11 @@ export const ZkElectionAbi = [
         name: 'currentState',
         type: 'uint8',
       },
-      { internalType: 'string', name: 'title', type: 'string' },
+      {
+        internalType: 'string',
+        name: 'title',
+        type: 'string',
+      },
     ],
     stateMutability: 'view',
     type: 'function',
@@ -402,6 +406,11 @@ export const ZkElectionAbi = [
       {
         internalType: 'uint256',
         name: 'voteCount',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: '',
         type: 'uint256',
       },
     ],

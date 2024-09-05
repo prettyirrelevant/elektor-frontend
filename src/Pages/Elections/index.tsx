@@ -1,5 +1,6 @@
 import { ZkElectionAbi } from '@/abis/ZkElection';
 import { signMessage } from '@wagmi/core';
+import { WaitForTransactionReceiptErrorType, waitForTransactionReceipt } from '@wagmi/core';
 import { multicall } from '@wagmi/core';
 import { differenceInSeconds, format, formatDistanceToNow, fromUnixTime, getUnixTime } from 'date-fns';
 import {
@@ -40,6 +41,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { TooltipContent, TooltipProvider, TooltipTrigger, Tooltip as UITooltip } from '@/components/ui/tooltip';
 import { type Identity, castVote, getIdentity, setIdentity, uploadCredentials } from '@/lib/api';
+import { generateSecretAndNullifier } from '@/lib/utils';
 import { config } from '@/wagmi.ts';
 import { buildPoseidon } from 'circomlibjs';
 
@@ -106,6 +108,19 @@ const Election: React.FC = () => {
     }
   }, [activeView]);
 
+  useEffect(() => {
+    if (address) {
+      const storedSignature = localStorage.getItem(`sig:${address.toLowerCase()}`);
+      if (storedSignature) {
+        setSignature(storedSignature);
+      } else {
+        setSignature("");
+      }
+    } else {
+      setSignature("");
+    }
+  }, [address]);
+
   const determineElectionStatus = (startDate: bigint, endDate: bigint): ElectionStatus => {
     const now = getUnixTime(new Date());
     if (now < startDate) {
@@ -130,15 +145,21 @@ const Election: React.FC = () => {
         })),
       });
 
+      console.log('candidates multicall: ', candidatesMulticall);
+
+
       // Process candidates data
       const candidates: Candidate[] = candidatesMulticall.map((result, idx) => ({
-        id: idx,
+        // @ts-ignore
+        id: result.result ? idx : 0,
         platform: '',
         // @ts-ignore
         name: result.result ? result.result[0] : '',
         // @ts-ignore
         votes: result.result ? Number(result.result[1]) : 0,
       }));
+
+      console.log('candidates: ', candidates);
 
       // Create the election object
       const election: Election = {
@@ -164,10 +185,8 @@ const Election: React.FC = () => {
   const fetchUserVotes = async () => {
     setIsLoadingUserVotes(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      // Simulating fetching user votes
-      const mockUserVotes = [1, 2]; // Assume the user has voted in elections with IDs 1 and 2
-      setUserElections(mockUserVotes);
+      const userVotes = identityData?.hasVoted ? [0] : [];
+      setUserElections(userVotes);
     } catch (error) {
       toast.error('Failed to fetch your voting history. Please try again.');
     } finally {
@@ -187,6 +206,7 @@ const Election: React.FC = () => {
               message,
             });
             setSignature(`${accounts[0]}:${signature}`);
+            localStorage.setItem(`sig:${accounts[0].toLowerCase()}`, `${accounts[0]}:${signature}`);
             await setIdentity(`${accounts[0]}:${signature}`);
           },
         },
@@ -197,22 +217,27 @@ const Election: React.FC = () => {
   };
 
   const handleDisconnect = () => {
+    if (address) {
+      localStorage.removeItem(`sig:${address.toLowerCase()}`);
+    }
     disconnect();
+    setSignature("");
     toast.success('Wallet disconnected successfully.');
   };
 
   const handleVote = async (electionId: number, candidateId: number) => {
     try {
-      const secret = crypto.getRandomValues(new Uint32Array(1))[0];
-      const nullifier = crypto.getRandomValues(new Uint32Array(1))[0];
+      const { secret, nullifier } = generateSecretAndNullifier(signature);
       const poseidon = await buildPoseidon();
       const commitment = poseidon.F.toObject(poseidon([secret, nullifier]));
 
-      await writeContractAsync({
+      const txHash = await writeContractAsync({
         ...zkVotingContract,
         functionName: 'registerToVote',
         args: [commitment],
       });
+
+      // await waitForTransactionReceipt(config, {hash:txHash});
       toast.success('Voting registration successful!');
 
       const response = await castVote(signature, secret.toString(), nullifier.toString(), candidateId);
@@ -253,8 +278,6 @@ const Election: React.FC = () => {
       toast.error('Failed to check for existing credential. Please try again.');
     }
   };
-
-  // const checkEligibility = async () => {}
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -496,7 +519,7 @@ const Election: React.FC = () => {
                             <div className="flex-1 min-w-0">
                               <h3 className="text-lg font-semibold text-gray-900 truncate">{election.name}</h3>
                               <p className="text-sm text-gray-500">
-                                Voted {formatDistanceToNow(parseISO(election.endDate), { addSuffix: true })}
+                                Voted {formatDistanceToNow(fromUnixTime(election.endDate), { addSuffix: true })}
                               </p>
                             </div>
                             <Button
@@ -557,13 +580,9 @@ const Election: React.FC = () => {
                       <FileText className="h-5 w-5 text-green-500" />
                       <span className="text-sm text-gray-700">Credential file already uploaded.</span>
                     </div>
-                    {/* <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => checkEligibility()}
-                      >
-                        Check eligibility
-                      </Button> */}
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm font-black text-gray-700">DiD: {identityData?.did}</span>
+                    </div>
                   </div>
                 ) : (
                   <div className="space-y-4">
@@ -633,7 +652,7 @@ const ElectionDetails: React.FC<ElectionDetailsProps> = ({ election, onVote, has
   useEffect(() => {
     const updateCountdown = () => {
       const now = new Date();
-      const end = parseISO(election.endDate);
+      const end = fromUnixTime(election.endDate);
       const difference = differenceInSeconds(end, now);
 
       if (difference <= 0) {
@@ -683,7 +702,7 @@ const ElectionDetails: React.FC<ElectionDetailsProps> = ({ election, onVote, has
     }
     switch (election.status) {
       case 'not_started':
-        return <Button disabled>Voting Not Yet Open</Button>;
+        return <Button onClick={() => setIsVoteModalOpen(true)}>Cast Your Vote</Button>;
       case 'active':
         return <Button onClick={() => setIsVoteModalOpen(true)}>Cast Your Vote</Button>;
       case 'ended':

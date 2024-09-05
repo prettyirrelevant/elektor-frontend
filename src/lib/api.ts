@@ -1,13 +1,15 @@
 // api.ts
 
-const API_BASE_URL = 'https://elektor-api.onrender.com/api';
+// const API_BASE_URL = 'https://elektor-api.onrender.com/api';
+const API_BASE_URL = 'http://localhost:8080/api';
 
 export interface Identity {
   did: string;
   address: string;
   createdAt: string;
-  isDocumentUploaded: boolean;
+  hasVoted: boolean;
   identityCredential: any;
+  isDocumentUploaded: boolean;
 }
 
 interface IdentityResponse {
@@ -89,11 +91,16 @@ export async function generateProof(token: string): Promise<ProofResponse> {
   return handleResponse(response);
 }
 
-export async function castVote(token: string, secret: string, nullifier: string, contestantId: number): Promise<VoteResponse> {
+export async function castVote(
+  token: string,
+  secret: string,
+  nullifier: string,
+  contestantId: number,
+): Promise<VoteResponse> {
   const response = await fetch(`${API_BASE_URL}/vote`, {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${token}`,
+      Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
