@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 const Header = () => {
   const navigate = useNavigate();
 
-
   return (
     <div className="py-8 px-6">
       <div className="flex justify-between items-center">
