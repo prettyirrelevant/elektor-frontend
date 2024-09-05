@@ -307,12 +307,7 @@ const Election: React.FC = () => {
   const handleShareVote = (electionId: number) => {
     const election = elections.find((e) => e.id === electionId);
     if (!election) return;
-
-
-    const shareText = `I just voted in the "${election.name}"! #CryptoVote`;
-
     const shareText = `I just voted in the "${election.name}"! #Elektor`;
-
     const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
     window.open(shareUrl, "_blank");
   };

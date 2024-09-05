@@ -11,11 +11,7 @@ const Body = () => {
           <span>-</span>
           <Typewriter
             options={{
-
-              strings: ["TAMPER-PROOF", "RELIABLE", "TRANSPARENT"],
-
               strings: ["TAMPER-PROOF", "RELIABLE", "TRANSPARENT", "PRIVATE", "VERIFIABLE"],
-
               autoStart: true,
               loop: true,
             }}
